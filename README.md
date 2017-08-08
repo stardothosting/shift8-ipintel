@@ -38,9 +38,9 @@ e.g.
 
 ## Frequently Asked Questions 
 
-### The nav bar is conflicting with an existing navigation menu!
+### I tested it and its not setting the cookie for me!
 
-Since every theme is different, its possible that you may have to "hide" the existing menu if its conflicting. The first thing you could try is simply identifying the container class or identifier for the navigation menu you want to hide. Then modify your theme's CSS to "display:none" that selector.
+If you are logged in as an administrator, the entire system ignores your connection. This is by design to avoid accidentally locking yourself out of your own site! To test, try in a different browser or try logging out (but be careful).
 
 ### Screenshots 
 
