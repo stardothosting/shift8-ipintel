@@ -53,7 +53,7 @@ function shift8_ipintel_init() {
         // Make sure you dont accidentally catch logged in admin
         if (is_admin() && isset($_COOKIE['shift8_ipintel'])) {
             clear_shift8_ipintel_cookie();
-        } else {
+        } else if (!is_admin()) {
             // Get the IP and encryption key once
             $ip_address = shift8_ipintel_get_ip();
             $encryption_key = esc_attr( get_option('shift8_ipintel_encryptionkey'));
