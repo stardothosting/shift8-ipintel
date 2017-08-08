@@ -17,7 +17,7 @@ function shift8_ipintel_encryption_key() {
 // Callback for key regeneration
 function shift8_ipintel_ajax_process_request() {
     // first check if data is being sent and that it is the data we want
-    if ( isset( $_POST["gen_key"] ) ) {
+    if ( isset( esc_attr($_POST["gen_key"] )) ) {
         $new_encryption_key = shift8_ipintel_encryption_key();
         echo $new_encryption_key;
         die();
