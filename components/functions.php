@@ -73,13 +73,23 @@ function shift8_ipintel_init() {
                 if ($cookie_data[0] != $ip_address) {
                     clear_shift8_ipintel_cookie();
                 } else if ($cookie_data[1] == 'banned') {
-                    header('HTTP/1.0 403 Forbidden');
-                    echo 'Error : forbidden';
-                    die();
+                    if (esc_attr(get_option('shift8_ipintel_action')) == '403') {
+                        header('HTTP/1.0 403 Forbidden');
+                        echo 'Forbidden';
+                        die();
+                    } else if (esc_attr(get_option('shift8_ipintel_action')) == '301') {
+                        header("HTTP/1.1 301 Moved Permanently"); 
+                        header("Location: " . esc_attr(get_option('shift8_ipintel_action301')));
+                        die();
+                    }
                 } else if ($cookie_data[1] == 'error_detected') {
-                    header('HTTP/1.0 403 Forbidden');
-                    echo 'Error detected with IP Intel';
-                    die();
+                    // Unset the existing cookie, re-set it with a shorter expiration time
+                    clear_shift8_ipintel_cookie();
+                    // Set the ip address but clear any IP Intel values for now
+                    $cookie_newdata = $cookie_data[0] . '_ignore';
+                    $cookie_value = shift8_ipintel_encrypt($encryption_key, $cookie_newdata);
+                    // Generally if there is an error detected, its likely because you exceeded the threshold. Wait an hour before doing this process again
+                    setcookie( 'shift8_ipintel', $cookie_value, strtotime( '+1 hour' ), '/', false);
                 }
             }
         }
