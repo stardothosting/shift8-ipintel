@@ -58,7 +58,7 @@ function shift8_ipintel_init() {
                 session_start();
             }
             // If the cookie isnt set
-            if (!isset($_SESSION['shift8_ipintel'])) {
+            if (!isset($_SESSION['shift8_ipintel']) || empty($_SESSION['shift8_ipintel'])) {
                 // Only set the cookie if a valid IP address was found
                 if ($ip_address) {
                     $ip_intel = shift8_ipintel_check($ip_address);
@@ -109,30 +109,20 @@ function shift8_ipintel_check($ip){
         
         $response = wp_remote_get( "http://check.getipintel.net/check.php?ip=$ip&contact=$contact_email", 
             array(
-                'user-agent' => 'curl/7.37.0',
-                'sslverify' => false,
                 'httpversion' => '1.1',
             )
         );
-        echo '<pre>';
-        var_dump($response);
-        echo '</pre>';
-        exit(0);
-        
-        if ($response > $ban_threshold) {
+
+        if ($response['body'] > $ban_threshold) {
                 return 'banned';
         } else {
-            if ($response < 0 || strcmp($response, "") == 0 ) {
+            if ($response['body'] < 0 || strcmp($response['body'], "") == 0 ) {
                 // Set cookie with encrypted error flag
                 return 'error_detected';
             }
                 return 'valid';
         }
 }
-/*$ip=shift8_ipintel_get_ip();
-if (shift8_ipintel_check($ip)) {
-    echo "It appears you're a Proxy / VPN / bad IP, please contact [put something here] for more information <br />";
-}*/
 
 function shift8_ipintel_get_ip() {
 
