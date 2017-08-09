@@ -1,8 +1,5 @@
 <?php
 
-// Load curl emulator library
-require_once(plugin_dir_path(__FILE__).'includes/libcurlemu/libcurlemu.inc.php');
-
 // Encryption key generation 
 function shift8_ipintel_encryption_key() {
     $cstrong = false;
@@ -17,7 +14,7 @@ function shift8_ipintel_encryption_key() {
 // Callback for key regeneration
 function shift8_ipintel_ajax_process_request() {
     // first check if data is being sent and that it is the data we want
-    if ( isset( esc_attr($_POST["gen_key"] )) ) {
+    if ( esc_attr($_POST["gen_key"] ) == null ) {
         $new_encryption_key = shift8_ipintel_encryption_key();
         echo $new_encryption_key;
         die();
@@ -51,28 +48,31 @@ function shift8_ipintel_init() {
     // Initialize only if enabled
     if (shift8_ipintel_check_options()) {
         // Make sure you dont accidentally catch logged in admin
-        if (is_admin() && isset($_COOKIE['shift8_ipintel'])) {
-            clear_shift8_ipintel_cookie();
+        if (is_admin() && isset($_SESSION['shift8_ipintel'])) {
+            clear_shift8_ipintel_session();
         } else if (!is_admin()) {
             // Get the IP and encryption key once
             $ip_address = shift8_ipintel_get_ip();
             $encryption_key = esc_attr( get_option('shift8_ipintel_encryptionkey'));
+            if (!session_id()) {
+                session_start();
+            }
             // If the cookie isnt set
-            if (!isset($_COOKIE['shift8_ipintel'])) {
+            if (!isset($_SESSION['shift8_ipintel'])) {
                 // Only set the cookie if a valid IP address was found
                 if ($ip_address) {
                     $ip_intel = shift8_ipintel_check($ip_address);
-                    $cookie_data = $ip_address . '_' . $ip_intel;
-                    $cookie_value = shift8_ipintel_encrypt($encryption_key, $cookie_data);
-                    setcookie( 'shift8_ipintel', $cookie_value, strtotime( '+1 day' ), '/', false);
+                    $session_data = $ip_address . '_' . $ip_intel . '_' . strtotime( '+1 day' );
+                    $session_value = shift8_ipintel_encrypt($encryption_key, $session_data);
+                    $_SESSION['shift8_ipintel'] = $session_value;
                 }
             } else {
                 // if cookie is set, validate it and remove if not valid
-                $cookie_data = explode('_', shift8_ipintel_decrypt($encryption_key, $_COOKIE['shift8_ipintel']));
+                $session_data = explode('_', shift8_ipintel_decrypt($encryption_key, $_SESSION['shift8_ipintel']));
                 // If the ip address doesnt match the encrypted value of the cookie
-                if ($cookie_data[0] != $ip_address) {
-                    clear_shift8_ipintel_cookie();
-                } else if ($cookie_data[1] == 'banned') {
+                if ($session_data[0] != $ip_address) {
+                    clear_shift8_ipintel_session();
+                } else if ($session_data[1] == 'banned') {
                     if (esc_attr(get_option('shift8_ipintel_action')) == '403') {
                         header('HTTP/1.0 403 Forbidden');
                         echo 'Forbidden';
@@ -82,14 +82,14 @@ function shift8_ipintel_init() {
                         header("Location: " . esc_attr(get_option('shift8_ipintel_action301')));
                         die();
                     }
-                } else if ($cookie_data[1] == 'error_detected') {
+                } else if ($session_data[1] == 'error_detected') {
                     // Unset the existing cookie, re-set it with a shorter expiration time
-                    clear_shift8_ipintel_cookie();
+                    clear_shift8_ipintel_session();
                     // Set the ip address but clear any IP Intel values for now
-                    $cookie_newdata = $cookie_data[0] . '_ignore';
-                    $cookie_value = shift8_ipintel_encrypt($encryption_key, $cookie_newdata);
+                    $session_newdata = $cookie_data[0] . '_ignore_' . strtotime( '+1 hour' );
+                    $session_value = shift8_ipintel_encrypt($encryption_key, $cookie_newdata);
                     // Generally if there is an error detected, its likely because you exceeded the threshold. Wait an hour before doing this process again
-                    setcookie( 'shift8_ipintel', $cookie_value, strtotime( '+1 hour' ), '/', false);
+                    $_SESSION['shift8_ipintel'] = $session_value;
                 }
             }
         }
@@ -98,9 +98,8 @@ function shift8_ipintel_init() {
 add_action('init', 'shift8_ipintel_init', 1);
 
 // Common function to clear the cookie
-function clear_shift8_ipintel_cookie() {
-        unset($_COOKIE['shift8_ipintel']);
-        setcookie('shift8_ipintel', '',  time()-3600, '/');
+function clear_shift8_ipintel_session() {
+    unset($_SESSION['shift8_ipintel']);
 }
 
 function shift8_ipintel_check($ip){
@@ -108,16 +107,17 @@ function shift8_ipintel_check($ip){
         $timeout = esc_attr(get_option('shift8_ipintel_timeout')); //by default, wait no longer than 5 secs for a response
         $ban_threshold = esc_attr(get_option('shift8_ipintel_actionthreshold')); //if getIPIntel returns a value higher than this, function returns true, set to 0.99 by default
         
-        //init and set cURL options
-        $ch = curl_init();
-        curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
-        curl_setopt($ch, CURLOPT_TIMEOUT, $timeout);
-        //if you're using custom flags (like flags=m), change the URL below
-        curl_setopt($ch, CURLOPT_URL, "http://check.getipintel.net/check.php?ip=$ip&contact=$contact_email");
-        $test = curl_getinfo($ch);
-        $response=curl_exec($ch);
-        
-        curl_close($ch);
+        $response = wp_remote_get( "http://check.getipintel.net/check.php?ip=$ip&contact=$contact_email", 
+            array(
+                'user-agent' => 'curl/7.37.0',
+                'sslverify' => false,
+                'httpversion' => '1.1',
+            )
+        );
+        echo '<pre>';
+        var_dump($response);
+        echo '</pre>';
+        exit(0);
         
         if ($response > $ban_threshold) {
                 return 'banned';
