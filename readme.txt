@@ -38,7 +38,7 @@ e.g.
 
 == Frequently Asked Questions ==
 
-= I tested it and its not setting the cookie for me! =
+= I tested it on myself and its not working for me! =
 
 If you are logged in as an administrator, the entire system ignores your connection. This is by design to avoid accidentally locking yourself out of your own site! To test, try in a different browser or try logging out (but be careful).
 
