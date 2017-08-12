@@ -8,7 +8,7 @@
 * License: GPLv3
 * License URI: http://www.gnu.org/licenses/gpl-3.0.html
 
-Plugin that establishes an IP Address reputation score from https://getipintel.net. Score is stored in an encrypted session cookie.
+Plugin that establishes an IP Address reputation score from [getipintel.net](https://getipintel.net). Score is stored in an encrypted session cookie.
 
 == Want to see the plugin in action? ==
 
