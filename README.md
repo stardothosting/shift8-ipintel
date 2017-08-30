@@ -4,7 +4,7 @@
 * Tags: getipintel ip address proxy security reputation tor
 * Requires at least: 3.0.1
 * Tested up to: 4.8
-* Stable tag: 1.00
+* Stable tag: 1.01
 * License: GPLv3
 * License URI: http://www.gnu.org/licenses/gpl-3.0.html
 
@@ -51,3 +51,6 @@ If you are logged in as an administrator, the entire system ignores your connect
 
 ### 1.0 
 * Stable version created
+
+### 1.01
+* Fixed issue with ajax callback for encryption key regeneration and nonce validation

@@ -14,10 +14,13 @@ function shift8_ipintel_encryption_key() {
 // Callback for key regeneration
 function shift8_ipintel_ajax_process_request() {
     // first check if data is being sent and that it is the data we want
-    if ( esc_attr($_POST["gen_key"] ) == null ) {
+    $check_nonce = check_ajax_referer( 'shift8_ipintel_response_nonce', 'nonce');
+    if ( $check_nonce == true) {
         $new_encryption_key = shift8_ipintel_encryption_key();
         echo $new_encryption_key;
         die();
+    } else {
+        wp_send_json_error( array( 'error' => $custom_error ) );
     }
 }
 add_action('wp_ajax_shift8_ipintel_response', 'shift8_ipintel_ajax_process_request');
