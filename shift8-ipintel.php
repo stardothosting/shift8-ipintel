@@ -3,7 +3,7 @@
  * Plugin Name: Shift8 IP Intel
  * Plugin URI: https://github.com/stardothosting/shift8-ipintel
  * Description: Plugin that establishes an IP Address reputation score from https://getipintel.net. Score is stored in an encrypted session variable.
- * Version: 1.01
+ * Version: 1.02
  * Author: Shift8 Web 
  * Author URI: https://www.shift8web.ca
  * License: GPLv3

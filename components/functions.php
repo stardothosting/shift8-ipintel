@@ -113,6 +113,7 @@ function shift8_ipintel_check($ip){
         $response = wp_remote_get( "http://check.getipintel.net/check.php?ip=$ip&contact=$contact_email", 
             array(
                 'httpversion' => '1.1',
+                'timeout' => $timeout,
             )
         );
 
