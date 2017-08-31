@@ -1,7 +1,7 @@
 # Shift8 IP Intel 
 * Contributors: shift8
 * Donate link: https://www.shift8web.ca
-* Tags: getipintel ip address proxy security reputation tor
+* Tags: getipintel, ip address, proxy, security, reputation, tor, ip reputation, detect proxy, detect tor, detect vpn, ip security, block ip, block tor, block vpn, block proxy, ip address reputation, getipintel.net, get ip intel, get ip intelligence, ip intel, ip intelligence, ip audit, ip address audit, security audit
 * Requires at least: 3.0.1
 * Tested up to: 4.8
 * Stable tag: 1.03
