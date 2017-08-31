@@ -46,7 +46,7 @@ function shift8_ipintel_decrypt($key, $garble) {
     }       
 }
 
-// Function to initialize & check for cookie
+// Function to initialize & check for session 
 function shift8_ipintel_init() {
     // Initialize only if enabled
     if (shift8_ipintel_check_options()) {
@@ -60,9 +60,9 @@ function shift8_ipintel_init() {
             if (!session_id()) {
                 session_start();
             }
-            // If the cookie isnt set
+            // If the session isnt set
             if (!isset($_SESSION['shift8_ipintel']) || empty($_SESSION['shift8_ipintel'])) {
-                // Only set the cookie if a valid IP address was found
+                // Only set the session if a valid IP address was found
                 if ($ip_address) {
                     $ip_intel = shift8_ipintel_check($ip_address);
                     $session_data = $ip_address . '_' . $ip_intel . '_' . strtotime( '+1 day' );
@@ -70,9 +70,9 @@ function shift8_ipintel_init() {
                     $_SESSION['shift8_ipintel'] = $session_value;
                 }
             } else {
-                // if cookie is set, validate it and remove if not valid
+                // if session is set, validate it and remove if not valid
                 $session_data = explode('_', shift8_ipintel_decrypt($encryption_key, $_SESSION['shift8_ipintel']));
-                // If the ip address doesnt match the encrypted value of the cookie
+                // If the ip address doesnt match the encrypted value of the session 
                 if ($session_data[0] != $ip_address) {
                     clear_shift8_ipintel_session();
                 } else if ($session_data[1] == 'banned') {
@@ -86,11 +86,11 @@ function shift8_ipintel_init() {
                         die();
                     }
                 } else if ($session_data[1] == 'error_detected') {
-                    // Unset the existing cookie, re-set it with a shorter expiration time
+                    // Unset the existing session, re-set it with a shorter expiration time
                     clear_shift8_ipintel_session();
                     // Set the ip address but clear any IP Intel values for now
-                    $session_newdata = $cookie_data[0] . '_ignore_' . strtotime( '+1 hour' );
-                    $session_value = shift8_ipintel_encrypt($encryption_key, $cookie_newdata);
+                    $session_newdata = $session_data[0] . '_ignore_' . strtotime( '+1 hour' );
+                    $session_value = shift8_ipintel_encrypt($encryption_key, $session_newdata);
                     // Generally if there is an error detected, its likely because you exceeded the threshold. Wait an hour before doing this process again
                     $_SESSION['shift8_ipintel'] = $session_value;
                 }
@@ -100,7 +100,7 @@ function shift8_ipintel_init() {
 }
 add_action('init', 'shift8_ipintel_init', 1);
 
-// Common function to clear the cookie
+// Common function to clear the session 
 function clear_shift8_ipintel_session() {
     unset($_SESSION['shift8_ipintel']);
 }
@@ -121,7 +121,7 @@ function shift8_ipintel_check($ip){
                 return 'banned';
         } else {
             if ($response['body'] < 0 || strcmp($response['body'], "") == 0 ) {
-                // Set cookie with encrypted error flag
+                // Return with encrypted error flag
                 return 'error_detected';
             }
                 return 'valid';
