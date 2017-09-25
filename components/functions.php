@@ -137,23 +137,32 @@ function shift8_ipintel_check($ip){
         }
 }
 
+// Function to get public IP of end-user
 function shift8_ipintel_get_ip() {
+    $ip_keys = array('HTTP_CLIENT_IP', 'HTTP_X_FORWARDED_FOR', 'HTTP_X_FORWARDED', 'HTTP_X_CLUSTER_CLIENT_IP', 'HTTP_FORWARDED_FOR', 'HTTP_FORWARDED', 'REMOTE_ADDR');
+    foreach ($ip_keys as $key) {
+        if (array_key_exists($key, $_SERVER) === true) {
+            foreach (explode(',', $_SERVER[$key]) as $ip) {
+                // trim for safety measures
+                $ip = trim($ip);
+                // attempt to validate IP
+                if (shift8_ipintel_validate_ip($ip)) {
+                    return $ip;
+                }
+            }
+        }
+    }
+    return isset($_SERVER['REMOTE_ADDR']) ? $_SERVER['REMOTE_ADDR'] : false;
+}
 
-    // Methodically run through the environment variables that would store the public IP of the visitor
-    $ip = getenv('HTTP_CLIENT_IP')?:
-        getenv('HTTP_X_FORWARDED_FOR')?:
-        getenv('HTTP_X_FORWARDED')?:
-        getenv('HTTP_FORWARDED_FOR')?:
-        getenv('HTTP_FORWARDED')?:
-        getenv('REMOTE_ADDR');
-
-    // Check if the IP is local, return false if it is
-    if ( filter_var($ip, FILTER_VALIDATE_IP, FILTER_FLAG_NO_PRIV_RANGE) ) {
-        return $ip;
-    } else {
+function shift8_ipintel_validate_ip($ip)
+{
+    if (filter_var($ip, FILTER_VALIDATE_IP, FILTER_FLAG_IPV4 | FILTER_FLAG_NO_PRIV_RANGE | FILTER_FLAG_NO_RES_RANGE) === false) {
         return false;
     }
+    return true;
 }
+
 
 function shift8_ipintel_check_options() {
 
