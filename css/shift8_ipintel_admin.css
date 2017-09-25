@@ -76,3 +76,7 @@ input:checked + .slider:before {
 	width:100%; 
 	border-bottom: 6px solid #c1c1c1;
 }
+
+.shift8-ipintel-table td {
+    width:40%;
+}

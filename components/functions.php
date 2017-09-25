@@ -96,7 +96,7 @@ function shift8_ipintel_init() {
                 }
             }
         }
-    }
+    } 
 }
 add_action('init', 'shift8_ipintel_init', 1);
 
@@ -109,22 +109,31 @@ function shift8_ipintel_check($ip){
         $contact_email = esc_attr( get_option('shift8_ipintel_email'));
         $timeout = esc_attr(get_option('shift8_ipintel_timeout')); //by default, wait no longer than 5 secs for a response
         $ban_threshold = esc_attr(get_option('shift8_ipintel_actionthreshold')); //if getIPIntel returns a value higher than this, function returns true, set to 0.99 by default
+        if (empty(esc_attr(get_option('shift8_ipintel_subdomain')))) { 
+            $getipintel_url = 'check.getipintel.net';
+        } else {
+            $getipintel_url = esc_attr(get_option('shift8_ipintel_subdomain')) . '.getipintel.net';
+        }
         
-        $response = wp_remote_get( "http://check.getipintel.net/check.php?ip=$ip&contact=$contact_email", 
+        $response = wp_remote_get( "http://" . $getipintel_url . "/check.php?ip=$ip&contact=$contact_email", 
             array(
                 'httpversion' => '1.1',
                 'timeout' => $timeout,
             )
         );
 
-        if ($response['body'] > $ban_threshold) {
+        if (is_array($response) && !empty($response['body'])) {
+            if ($response['body'] > $ban_threshold) {
                 return 'banned';
-        } else {
-            if ($response['body'] < 0 || strcmp($response['body'], "") == 0 ) {
-                // Return with encrypted error flag
-                return 'error_detected';
+            } else {
+                if ($response['body'] < 0 || strcmp($response['body'], "") == 0 ) {
+                    // Return with encrypted error flag
+                    return 'error_detected';
+                }
+                    return 'valid';
             }
-                return 'valid';
+        } else { 
+            return 'error_detected';
         }
 }
 
@@ -150,6 +159,8 @@ function shift8_ipintel_check_options() {
 
     // If enabled is not set 
     if (empty(esc_attr(get_option('shift8_ipintel_timeout', '5')))) return false;
+    // If safe mode is enabled
+    if (esc_attr( get_option('shift8_ipintel_safemode') ) == 'on') return false;
     // If there's no encryption key set
     if (empty(get_option('shift8_ipintel_encryptionkey'))) return false;
     // If there's no action threshold set

@@ -23,6 +23,7 @@ function register_shift8_ipintel_settings() {
     register_setting( 'shift8-ipintel-settings-group', 'shift8_ipintel_action', 'shift8_ipintel_action_validate' );
     register_setting( 'shift8-ipintel-settings-group', 'shift8_ipintel_action301', 'shift8_ipintel_action301_validate' );
     register_setting( 'shift8-ipintel-settings-group', 'shift8_ipintel_timeout', 'shift8_ipintel_timeout_validate' );
+    register_setting( 'shift8-ipintel-settings-group', 'shift8_ipintel_subdomain', 'shift8_ipintel_subdomain_validate' );
 }
 
 // Functions to validate settings prior to saving
@@ -86,4 +87,16 @@ function shift8_ipintel_timeout_validate($data) {
             'error');
     } 
 
+}
+
+function shift8_ipintel_subdomain_validate($data) {
+    if (ctype_alnum($data)) {
+        return esc_attr($data);
+    } else {
+        add_settings_error(
+            'shift8_ipintel_subdomain',
+            'shift8-ipintel-notice',
+            'For subdomain, you can only enter alphanumeric characters',
+            'error');
+    }
 }

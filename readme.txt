@@ -4,7 +4,7 @@
 * Tags: getipintel, ip address, proxy, security, reputation, tor, ip reputation, detect proxy, detect tor, detect vpn, ip security, block ip, block tor, block vpn, block proxy, ip address reputation, getipintel.net, get ip intel, get ip intelligence, ip intel, ip intelligence, ip audit, ip address audit, security audit
 * Requires at least: 3.0.1
 * Tested up to: 4.8
-* Stable tag: 1.03
+* Stable tag: 1.04
 * License: GPLv3
 * License URI: http://www.gnu.org/licenses/gpl-3.0.html
 
@@ -60,3 +60,6 @@ If you are logged in as an administrator, the entire system ignores your connect
 
 = 1.03 =
 * Removed references to cookies, fixed bug in init when session has to be reset
+
+= 1.04 =
+* Disable main functionality when safe mode is active

@@ -3,7 +3,7 @@
  * Plugin Name: Shift8 IP Intel
  * Plugin URI: https://github.com/stardothosting/shift8-ipintel
  * Description: Plugin that establishes an IP Address reputation score from https://getipintel.net. Score is stored in an encrypted session variable.
- * Version: 1.03
+ * Version: 1.04
  * Author: Shift8 Web 
  * Author URI: https://www.shift8web.ca
  * License: GPLv3
@@ -44,7 +44,7 @@ function shift8_ipintel_settings_page() {
 		}
 	}
 	?>
-    <table class="form-table">
+    <table class="form-table shift8-ipintel-table">
 	<tr valign="top">
 	<th scope="row">Core Settings</th>
 	</tr>
@@ -56,6 +56,7 @@ function shift8_ipintel_settings_page() {
     settings_errors('shift8_ipintel_action');
     settings_errors('shift8_ipintel_action301');
     settings_errors('shift8_ipintel_timeout');
+    settings_errors('shift8_ipintel_subdomain');
     ?>
     </span></td>
 	</tr>
@@ -120,6 +121,9 @@ function shift8_ipintel_settings_page() {
     </tr>
     <tr valign="top">
     <td>Timeout (seconds) for IP Intel Response : <td><input type="text" name="shift8_ipintel_timeout" size="2" value="<?php echo (is_numeric($ipintel_timeout) && $ipintel_timeout >= 1 && $ipintel_timeout <= 5 ? $ipintel_timeout : '5'); ?>"></td>
+    </tr>
+    <tr valign="top">
+    <td>Custom subdomain for IP Intel Request : <td><input type="text" name="shift8_ipintel_subdomain" value="<?php echo (empty(esc_attr(get_option('shift8_ipintel_subdomain'))) ? '' : esc_attr(get_option('shift8_ipintel_subdomain'))); ?>"></td>
     </tr>
 	<tr valign="top">
 	<td><input size="64" id="shift8-encryption-key" name="shift8_ipintel_encryptionkey" value="<?php echo $encryption_key; ?>" type="hidden"/>
