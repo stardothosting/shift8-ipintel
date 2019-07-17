@@ -168,6 +168,8 @@ function shift8_ipintel_check_options() {
 
     // If enabled is not set 
     if (empty(esc_attr(get_option('shift8_ipintel_timeout', '5')))) return false;
+    // If timeout is not set
+    if (empty(esc_attr(get_option('shift8_ipintel_timeout', '5')))) return false;
     // If safe mode is enabled
     if (esc_attr( get_option('shift8_ipintel_safemode') ) == 'on') return false;
     // If there's no encryption key set

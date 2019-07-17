@@ -3,7 +3,7 @@
 * Donate link: https://www.shift8web.ca
 * Tags: getipintel, ip address, proxy, security, reputation, tor, ip reputation, detect proxy, detect tor, detect vpn, ip security, block ip, block tor, block vpn, block proxy, ip address reputation, getipintel.net, get ip intel, get ip intelligence, ip intel, ip intelligence, ip audit, ip address audit, security audit
 * Requires at least: 3.0.1
-* Tested up to: 5.0.2
+* Tested up to: 5.2.2
 * Stable tag: 1.06
 * License: GPLv3
 * License URI: http://www.gnu.org/licenses/gpl-3.0.html
